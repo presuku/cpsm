@@ -12,13 +12,17 @@
 find_path(
     ICU_INCLUDE_DIR
     NAMES unicode/utypes.h
-    DOC "Include directory for the ICU library")
+    DOC "Include directory for the ICU library"
+    PATHS icu-windows/include
+    )
 mark_as_advanced(ICU_INCLUDE_DIR)
 # Look for the library.
 find_library(
     ICU_LIBRARY
     NAMES icuuc cygicuuc cygicuuc32
-    DOC "Libraries to link against for the common parts of ICU")
+    DOC "Libraries to link against for the common parts of ICU"
+    PATHS icu-windows/lib64
+    )
 mark_as_advanced(ICU_LIBRARY)
 # Copy the results to the output variables.
 if (ICU_INCLUDE_DIR AND ICU_LIBRARY)

@@ -39,7 +39,7 @@ int (*vim_list_append_string)(list_T *l, char_u *str, int len) = NULL;
 namespace {
 
 inline bool VimString_AsStringAndSize(listitem_T* li, char** data,
-                                        ssize_t* size) {
+                                        std::size_t* size) {
 	if (li->li_tv.v_type == VAR_STRING) {
 	    *data = (char *)li->li_tv.vval.v_string;
         *size = std::strlen(*data);
@@ -90,7 +90,7 @@ class VimListCtrlPMatchSource {
         return false;
       }
       char* item_data;
-      ssize_t item_size;
+      std::size_t item_size;
       if (!VimString_AsStringAndSize(item_obj, &item_data, &item_size)) {
         return false;
       }
@@ -99,7 +99,7 @@ class VimListCtrlPMatchSource {
               (cpsm::StringRefItem(string_view(item_data, item_size)))));
       return true;
     };
-    ssize_t const max = std::min(i_ + batch_size(), size_);
+    std::size_t const max = std::min(i_ + batch_size(), size_);
     for (; i_ < max; i_++) {
       if (!add_item(vim_list_find(list_, i_))) {
         done_ = true;
@@ -109,13 +109,13 @@ class VimListCtrlPMatchSource {
     return i_ != size_;
   }
 
-  static constexpr ssize_t batch_size() { return 512; }
+  static constexpr long long batch_size() { return 512; }
 
  private:
   std::mutex mu_;
   list_T* const list_;
-  ssize_t i_ = 0;
-  ssize_t size_ = 0;
+  std::size_t i_ = 0;
+  std::size_t size_ = 0;
   bool done_ = false;
 };
 
@@ -165,16 +165,16 @@ unsigned int get_nr_threads(unsigned int const max_threads) {
 
 int VimArg_ParseKeywords(cpsm_T *args,
                          list_T **items_obj,
-                         char const **query_data, ssize_t *query_size,
+                         char const **query_data, std::size_t *query_size,
                          int *limit_int,
-                         char const **mmode_data, ssize_t *mmode_size,
+                         char const **mmode_data, std::size_t *mmode_size,
                          int *is_path,
-                         char const **crfile_data, ssize_t *crfile_size,
-                         char const **highlight_mode_data, ssize_t *highlight_mode_size,
+                         char const **crfile_data, std::size_t *crfile_size,
+                         char const **highlight_mode_data, std::size_t *highlight_mode_size,
                          int *match_crfile,
                          int *max_threads_int,
-                         char const **query_inverting_delimiter_data, ssize_t *query_inverting_delimiter_size,
-                         char const **regex_line_prefix_data, ssize_t *regex_line_prefix_size,
+                         char const **query_inverting_delimiter_data, std::size_t *query_inverting_delimiter_size,
+                         char const **regex_line_prefix_data, std::size_t *regex_line_prefix_size,
                          int *unicode
                          )
 {
@@ -205,28 +205,28 @@ int VimArg_ParseKeywords(cpsm_T *args,
 
 extern "C" {
 
-void cpsm_ctrlp_match(cpsm_T *args, typval_T *rettv)
+DLLEXPORT void cpsm_ctrlp_match(cpsm_T *args, typval_T *rettv)
 {
   // Required parameters.
   list_T* items_obj;
   char const* query_data;
-  ssize_t query_size;
+  std::size_t query_size;
   // CtrlP-provided options.
   int limit_int = -1;
   char const* mmode_data = nullptr;
-  ssize_t mmode_size = 0;
+  std::size_t mmode_size = 0;
   int is_path = 0;
   char const* crfile_data = nullptr;
-  ssize_t crfile_size = 0;
+  std::size_t crfile_size = 0;
   // cpsm-specific options.
   char const* highlight_mode_data = nullptr;
-  ssize_t highlight_mode_size = 0;
+  std::size_t highlight_mode_size = 0;
   int match_crfile = 0;
   int max_threads_int = 0;
   char const* query_inverting_delimiter_data = nullptr;
-  ssize_t query_inverting_delimiter_size = 0;
+  std::size_t query_inverting_delimiter_size = 0;
   char const* regex_line_prefix_data = nullptr;
-  ssize_t regex_line_prefix_size = 0;
+  std::size_t regex_line_prefix_size = 0;
   int unicode = 0;
 
   if (!VimArg_ParseKeywords(

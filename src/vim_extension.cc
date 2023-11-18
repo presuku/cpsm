@@ -28,9 +28,14 @@
 #include "str_util.h"
 
 extern "C" {
-
+#ifdef _WIN32
+#define NOMINMAX
+#pragma once
+#define DLLEXPORT __declspec(dllexport)
+#else
+#define DLLEXPORT
+#endif
 #include "vim.h"
-
 long (*vim_list_len)(list_T *l) = NULL;
 listitem_T *(*vim_list_find)(list_T *l, long n) = NULL;
 int (*vim_list_append_string)(list_T *l, char_u *str, int len) = NULL;
